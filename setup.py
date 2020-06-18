@@ -81,6 +81,12 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     packages=find_packages(where=PROJECT_ROOT, exclude=("docs", "tests", ".github")),
+    entry_points={
+        "console_scripts": [
+            "pytorch-wheel-installer=pytorch_wheel_installer.cli:entry_point",
+            "pwi=pytorch_wheel_installer.cli:entry_point",
+        ]
+    },
     package_data=package_data,
     python_requires=">=3.6",
     classifiers=classifiers,
