@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 
-__all__ = ["get_tmp_dir"]
+__all__ = ["get_tmp_dir", "cycle_over"]
 
 
 # Copied from
@@ -36,3 +36,9 @@ def get_tmp_dir(**mkdtemp_kwargs):
         yield tmp_dir
     finally:
         shutil.rmtree(tmp_dir, onerror=onerror)
+
+
+def cycle_over(objs):
+    objs = list(objs)
+    for idx, obj in enumerate(objs):
+        yield obj, objs[:idx] + objs[idx + 1 :]
