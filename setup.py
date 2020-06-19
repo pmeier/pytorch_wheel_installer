@@ -67,8 +67,14 @@ install_requires = ("typing_extensions",)
 
 classifiers = (
     "Development Status :: 3 - Alpha",
+    "Framework :: tox",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
-    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Topic :: System :: Installation/Setup",
+    "Topic :: Utilities",
 )
 
 setup(
