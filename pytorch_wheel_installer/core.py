@@ -1,6 +1,7 @@
 import argparse
 import re
 import subprocess
+import sys
 from collections import namedtuple
 from typing import Any, Iterable, List, Union
 from urllib.parse import urljoin
@@ -41,10 +42,11 @@ def main(args: argparse.Namespace) -> None:
         for distribution in args.distributions
     ]
 
-    if args.install:
-        subprocess.check_call((*args.pip_cmd.split(), *links))
-    else:
+    if args.no_install:
         print("\n".join(links))
+        sys.exit(0)
+
+    subprocess.check_call((*args.pip_cmd.split(), *links))
 
 
 def extract_whl_files(

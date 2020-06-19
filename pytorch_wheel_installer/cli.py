@@ -72,11 +72,14 @@ def parse_input() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--install",
-        "-i",
+        "--no-install",
+        "-ni",
         action="store_true",
         default=False,
-        help="If given, installs the selected wheels with pip instead of listing them.",
+        help=(
+            "If given, the selected wheels are written to STDOUT instead of "
+            "installed."
+        ),
     )
     parser.add_argument(
         "--pip-cmd",
@@ -84,8 +87,7 @@ def parse_input() -> argparse.Namespace:
         type=str,
         default="pip install",
         help=(
-            "pip command that is used to install the wheels if --install is given. "
-            "Defaults to 'pip install'"
+            "pip command that is used to install the wheels. Defaults to 'pip install'"
         ),
     )
     args = parser.parse_args()
