@@ -1,7 +1,9 @@
-pytorch_wheel_installer
-=======================
+Disclaimer
+==========
 
-Install PyTorch from the latest wheels
+Neither this project (``pytorch_wheel_installer``) nor its author (Philip Meier) are
+affiliated with `PyTorch <https://pytorch.org>`_ in any way. PyTorch and any related
+marks are trademarks of Facebook, Inc.
 
 .. start-badges
 
