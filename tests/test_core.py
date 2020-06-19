@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 import requests
 
-from pytorch_wheel_installer import core
+from pytorch_wheel_installer import core, utils
 
 
 @mock.patch("pytorch_wheel_installer.core.urlopen")
@@ -15,7 +15,7 @@ def test_extract_wheel_files(urlopen_mock):
     content = "\n".join([fmtstr.format(file) for file in files]).encode("utf-8")
 
     class MockedBytesIO(BytesIO):
-        def read(self):
+        def read(self, *args):
             return content
 
     urlopen_mock.return_value = MockedBytesIO()
@@ -37,13 +37,10 @@ def test_parse_wheel_files_smoke():
         ), f"Requesting {url} returned status code {response.status_code}."
 
 
-def test_distributions_smoke():
-    backend = "cpu"
-    language = "py36"
-    platform = "linux"
+def test_find_links_smoke():
+    distributions = ("torch", "torchvision", "torchaudio", "torchtext")
+    backend = utils.Backend("cpu")
+    language = utils.Language("py36")
+    platform = utils.Platform("linux")
 
-    files = core.extract_whl_files()
-    whls = core.parse_whl_files(files)
-
-    for distribution in ("torch", "torchvision", "torchaudio", "torchtext"):
-        core.select_whl(whls, distribution, backend, language, platform)
+    core.find_links(distributions, backend, language, platform)
