@@ -88,7 +88,7 @@ setup(
             "pytorch-wheel-installer=pytorch_wheel_installer.cli:entry_point",
             "pwi=pytorch_wheel_installer.cli:entry_point",
         ],
-        "tox": ["pytorch:=pytorch_wheel_installer.tox"],
+        "tox": ["pytorch:=pytorch_wheel_installer._tox"],
     },
     package_data=package_data,
     python_requires=">=3.6",
