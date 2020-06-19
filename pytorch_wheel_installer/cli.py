@@ -177,7 +177,7 @@ def add_platform_argument(parser: Parser, *option_strings: str) -> None:
 
 
 def get_backend() -> Backend:
-    default_backend = Backend("cpu")
+    fallback = Backend("cpu")
     try:
         output = (
             subprocess.check_output("nvcc --version", shell=True)
@@ -186,17 +186,17 @@ def get_backend() -> Backend:
         )
         match = re.findall(r"release (?P<major>\d+)[.](?P<minor>\d+)", output)[0]
         if not match:
-            return default_backend
+            return fallback
 
         major, minor = match
         return Backend(f"cu{major}{minor}")
     except subprocess.CalledProcessError:
-        return default_backend
+        return fallback
 
 
 def get_language() -> Language:
     major, minor = sys.version_info[:2]
-    return Language(f"cp{major}{minor}")
+    return Language(f"py{major}{minor}")
 
 
 def get_platform() -> Platform:

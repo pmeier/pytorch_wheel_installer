@@ -90,9 +90,9 @@ def parse_whl_files(
 def select_whl(
     whls: Iterable[Whl],
     distribution: str,
-    backend: str,
-    language: Union[str, Language],
-    platform: Union[str, Platform],
+    backend: Backend,
+    language: Language,
+    platform: Platform,
 ) -> Whl:
     def select(whls: Iterable[Whl], attr: str, val: Any) -> List[Whl]:
         selected_whls = [whl for whl in whls if getattr(whl, attr) == val]
