@@ -14,8 +14,11 @@ jobs:
         with:
           python-version: "3.6"
 
-      - name: Upgrade pi
+      - name: Upgrade pip
         run: pip install --upgrade pip
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Install requirements
         run: pip install setuptools wheel twine
