@@ -30,9 +30,14 @@ overwritten manually.
 Installation
 ============
 
-``pytorch_wheel_installer`` is not yet listed on `PyPI <https://pypi.org/>`_ .
+The latest **stable** version can be installed with
 
-You can install the latest version with
+.. code-block:: sh
+
+  pip install pytorch_wheel_installer
+
+
+The **latest** potentially unstable version can be installed with
 
 .. code-block::
 
