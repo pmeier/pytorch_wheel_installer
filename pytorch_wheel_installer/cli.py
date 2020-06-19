@@ -143,37 +143,6 @@ def add_platform_argument(parser: Parser, *option_strings: str) -> None:
             "platform that is used to run this."
         ),
     )
-    parser.add_argument(
-        "--no-install",
-        "-ni",
-        action="store_true",
-        default=False,
-        help=(
-            "If given, the selected wheels are written to STDOUT instead of "
-            "installed."
-        ),
-    )
-    parser.add_argument(
-        "--pip-cmd",
-        "-pc",
-        type=str,
-        default="pip install",
-        help=(
-            "pip command that is used to install the wheels. Defaults to 'pip install'"
-        ),
-    )
-    args = parser.parse_args()
-
-    args.distributions = args.distribution.split(",")
-
-    if args.backend is None:
-        args.backend = get_backend()
-    if args.language is None:
-        args.language = get_language()
-    if args.platform is None:
-        args.platform = get_platform()
-
-    return args
 
 
 def get_backend() -> Backend:
