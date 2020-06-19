@@ -24,8 +24,6 @@ overwritten manually.
       - |black| |mypy| |lint|
     * - tests
       - |tests| |coverage|
-    * - docs
-      - |docs| |rtd|
 
 .. end-badges
 
@@ -148,13 +146,3 @@ If ``--pytorch-install`` is not given, nothing is installed.
   image:: https://codecov.io/gh/pmeier/pytorch_wheel_installer/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/pmeier/pytorch_wheel_installer
     :alt: Test coverage via codecov.io
-
-.. |docs|
-  image:: https://github.com/pmeier/pytorch_wheel_installer/workflows/docs/badge.svg
-    :target: https://github.com/pmeier/pytorch_wheel_installer/actions?query=workflow%3Adocs+branch%3Amaster
-    :alt: Docs status via GitHub Actions
-
-.. |rtd|
-  image:: https://img.shields.io/readthedocs/pytorch-wheel-installer?label=latest&logo=read%20the%20docs
-    :target: https://pytorch-wheel-installer.readthedocs.io/en/latest/?badge=latest
-    :alt: Latest documentation hosted on Read the Docs
