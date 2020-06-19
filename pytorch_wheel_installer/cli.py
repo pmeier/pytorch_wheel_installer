@@ -76,7 +76,10 @@ def parse_input() -> argparse.Namespace:
         "-ni",
         action="store_true",
         default=False,
-        help="If given, the selected wheels are written to STDIN instead of installed.",
+        help=(
+            "If given, the selected wheels are written to STDOUT instead of "
+            "installed."
+        ),
     )
     parser.add_argument(
         "--pip-cmd",
