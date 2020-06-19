@@ -50,3 +50,24 @@ jobs:
         uses: codecov/codecov-action@v1.0.7
         with:
           env_vars: OS,PYTHON
+
+  tox_plugin_smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.6"
+
+      - name: Upgrade pip and setuptools and install tox
+        run: pip install --upgrade pip setuptools tox
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install pytorch_wheel_installer
+        run: pip install .
+
+      - name: Test tox for smoke
+        run: tox --help
