@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 __name__ = "pytorch_wheel_installer"
-__description__ = "Install PyTorch from the latest wheels"
+__description__ = "install PyTorch distributions from the latest wheels."
 __keywords__ = "pytorch wheel"
 __base_version__ = "0.1.0"
 __is_dev_version__ = True
