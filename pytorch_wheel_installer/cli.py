@@ -4,19 +4,32 @@ import subprocess
 import sys
 from platform import system
 
-from .__init__ import __version__  # type: ignore[import]
-from .core import main
+from .__init__ import __name__ as name  # type: ignore[import]
+from .__init__ import __version__ as version
+from .core import find_links
 from .utils import Backend, Language, Platform
 
-__all__ = ["entry_point", "parse_input"]
+__all__ = [
+    "entry_point",
+    "get_backend",
+    "get_language",
+    "get_platform",
+]
 
 
 def entry_point() -> None:
     args = parse_input()
     if args.version:
-        print(f"pytorch_wheel_selector=={__version__}")
+        print(f"{name}=={version}")
         sys.exit()
-    main(args)
+
+    links = find_links(args.distribution, args.backend, args.language, args.platform)
+
+    if args.no_install:
+        print("\n".join(links))
+        sys.exit()
+
+    subprocess.check_call(" ".join((args.pip_cmd, *links)), shell=True)
 
 
 def parse_input() -> argparse.Namespace:
