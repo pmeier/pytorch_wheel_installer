@@ -1,7 +1,4 @@
-import argparse
 import re
-import subprocess
-import sys
 from collections import namedtuple
 from typing import Any, Iterable, List, Union
 from urllib.parse import urljoin
@@ -9,7 +6,7 @@ from urllib.request import urlopen
 
 from .utils import Backend, Language, Platform
 
-__all__ = ["main"]
+__all__ = ["find_links"]
 
 Whl = namedtuple(
     "whl", ("distribution", "version", "backend", "language", "platform", "url")
@@ -33,20 +30,28 @@ FILE_PATTERN = re.compile(
 )
 
 
-def main(args: argparse.Namespace) -> None:
+def find_links(
+    distributions: Union[Iterable[str], str],
+    backend: Union[Backend, str],
+    language: Union[Language, str],
+    platform: Union[Platform, str],
+) -> List[str]:
+    if isinstance(distributions, str):
+        distributions = distributions.split(",")
+    if isinstance(backend, str):
+        backend = Backend(backend)
+    if isinstance(language, str):
+        language = Language(language)
+    if isinstance(platform, str):
+        platform = Platform(platform)
+
     urls = extract_whl_files()
     whls = parse_whl_files(urls)
 
-    links = [
-        select_whl(whls, distribution, args.backend, args.language, args.platform).url
-        for distribution in args.distributions
+    return [
+        select_whl(whls, distribution, backend, language, platform).url
+        for distribution in distributions
     ]
-
-    if args.no_install:
-        print("\n".join(links))
-        sys.exit(0)
-
-    subprocess.check_call((*args.pip_cmd.split(), *links))
 
 
 def extract_whl_files(
@@ -85,9 +90,9 @@ def parse_whl_files(
 def select_whl(
     whls: Iterable[Whl],
     distribution: str,
-    backend: str,
-    language: Union[str, Language],
-    platform: Union[str, Platform],
+    backend: Backend,
+    language: Language,
+    platform: Platform,
 ) -> Whl:
     def select(whls: Iterable[Whl], attr: str, val: Any) -> List[Whl]:
         selected_whls = [whl for whl in whls if getattr(whl, attr) == val]

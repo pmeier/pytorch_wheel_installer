@@ -63,6 +63,8 @@ with open(path.join(PACKAGE_ROOT, version_file), "w") as fh:
     fh.write(__version__)
 package_data = {PACKAGE_NAME: [version_file, "py.typed"]}
 
+install_requires = ("typing_extensions",)
+
 classifiers = (
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: BSD License",
@@ -85,9 +87,11 @@ setup(
         "console_scripts": [
             "pytorch-wheel-installer=pytorch_wheel_installer.cli:entry_point",
             "pwi=pytorch_wheel_installer.cli:entry_point",
-        ]
+        ],
+        "tox": ["pytorch:=pytorch_wheel_installer.tox"],
     },
     package_data=package_data,
     python_requires=">=3.6",
+    install_requires=install_requires,
     classifiers=classifiers,
 )
