@@ -20,10 +20,7 @@ def tox_addoption(parser: Parser) -> None:
     parser.add_argument(
         "--pytorch-install",
         action="store_true",
-        help=(
-            "Install PyTorch distributions from the latests wheels before the other "
-            "dependencies."
-        ),
+        help="Install PyTorch distributions from the latest wheels.",
     )
 
     add_distribution_argument(parser, "--pytorch-distribution")
