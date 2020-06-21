@@ -25,8 +25,8 @@ jobs:
         with:
           python-version: "3.6"
 
-      - name: Upgrade pip and setuptools
-        run: pip install --upgrade pip setuptools
+      - name: Upgrade and install additional system packages
+        run: pip install --upgrade pip setuptools wheel
 
       - name: Checkout repository
         uses: actions/checkout@v2

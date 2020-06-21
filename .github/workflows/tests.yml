@@ -34,8 +34,8 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Upgrade pip and setuptools
-        run: pip install --upgrade pip setuptools
+      - name: Upgrade and install additional system packages
+        run: pip install --upgrade pip setuptools wheel
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -60,11 +60,14 @@ jobs:
         with:
           python-version: "3.6"
 
-      - name: Upgrade pip and setuptools and install tox
-        run: pip install --upgrade pip setuptools tox
+      - name: Upgrade and install additional system packages
+        run: pip install --upgrade pip setuptools wheel
 
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Install tox
+        run: pip install tox
 
       - name: Install pytorch_wheel_installer
         run: pip install .
