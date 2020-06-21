@@ -3,8 +3,6 @@ import re
 import subprocess
 import sys
 from platform import system
-from typing import Any
-from typing_extensions import Protocol
 
 from .__init__ import __name__ as name  # type: ignore[import]
 from .__init__ import __version__ as version
@@ -13,10 +11,7 @@ from .utils import Backend, Language, Platform
 
 __all__ = [
     "entry_point",
-    "add_distribution_argument",
-    "add_backend_argument",
-    "add_language_argument",
-    "add_platform_argument",
+    "argument_meta",
     "get_backend",
     "get_language",
     "get_platform",
@@ -50,10 +45,10 @@ def parse_input() -> argparse.Namespace:
         help="Show version and exit.",
     )
 
-    add_distribution_argument(parser, "--distribution", "-d")
-    add_backend_argument(parser, "--backend", "-b")
-    add_language_argument(parser, "--language", "-l")
-    add_platform_argument(parser, "--platform", "-p")
+    parser.add_argument("--distribution", "-d", **argument_meta("distribution"))
+    parser.add_argument("--backend", "-b", **argument_meta("backend"))
+    parser.add_argument("--language", "-l", **argument_meta("language"))
+    parser.add_argument("--platform", "-p", **argument_meta("platform"))
 
     parser.add_argument(
         "--no-install",
@@ -85,62 +80,40 @@ def parse_input() -> argparse.Namespace:
     return args
 
 
-class Parser(Protocol):
-    def add_argument(self, *args: Any, **kwargs: Any) -> argparse.Action:
-        ...
+from typing import Dict, Type, Any, Optional
+
+HELP = {
+    "distribution": (
+        "PyTorch distribution e.g. 'torch', 'torchvision'. Multiple distributions can "
+        "be given as a comma-separated list. Defaults to 'torch,torchvision'."
+    ),
+    "backend": (
+        "Computation backend e.g. 'cpu' or 'cu102'. If not given the backend is "
+        "automatically detected from the available hardware preferring CUDA over CPU."
+    ),
+    "language": (
+        "Language implementation and version tag e.g. 'py3', 'cp36'. Defaults to the "
+        "language version used to run this."
+    ),
+    "platform": (
+        "Platform e.g. 'linux', 'windows', 'macos', or 'any'. Defaults to the platform "
+        "that is used to run this."
+    ),
+}
 
 
-def add_distribution_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="DISTRIBUTION",
-        type=str,
-        default="torch,torchvision",
-        help=(
-            "PyTorch distribution e.g. 'torch', 'torchvision'. Multiple distributions "
-            "can be given as a comma-separated list. Defaults to 'torch,torchvision'."
-        ),
-    )
-
-
-def add_backend_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="BACKEND",
-        type=str,
-        default=None,
-        help=(
-            "Computation backend e.g. 'cpu' or 'cu102'. If not given the backend is "
-            "automatically detected from the available hardware preferring CUDA over "
-            "CPU."
-        ),
-    )
-
-
-def add_language_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="LANGUAGE",
-        type=str,
-        default=None,
-        help=(
-            "Language implementation and version tag e.g. 'py3', 'cp36'. Defaults to "
-            "the language version used to run this."
-        ),
-    )
-
-
-def add_platform_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="PLATFORM",
-        type=str,
-        default=None,
-        help=(
-            "Platform e.g. 'linux', 'windows', 'macos', or 'any'. Defaults to the "
-            "platform that is used to run this."
-        ),
-    )
+def argument_meta(
+    name: str,
+    metavar: Optional[str] = None,
+    type: Type = str,
+    default: Any = None,
+    help: Optional[str] = None,
+) -> Dict[str, Any]:
+    if metavar is None:
+        metavar = name.upper()
+    if help is None:
+        help = HELP[name]
+    return {"metavar": metavar, "type": type, "default": default, "help": help}
 
 
 def get_backend() -> Backend:
