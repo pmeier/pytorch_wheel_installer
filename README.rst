@@ -125,6 +125,24 @@ tox
 
 If ``--pytorch-install`` is not given, nothing is installed.
 
+Python
+------
+
+To find the links to the wheels for a specific setup, the function ``find_links`` can
+be used from within Python:
+
+.. code-block:: python
+
+  from pytorch_wheel_installer import find_links
+
+  links = find_links(
+      distributions=("torch", "torchvision"),
+      backend="cpu",
+      language="py36",
+      platform="linux",
+  )
+
+
 .. |license|
   image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
     :target: https://opensource.org/licenses/BSD-3-Clause

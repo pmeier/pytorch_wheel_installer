@@ -10,6 +10,7 @@ skip = [
   ".pytest_cache",
   ".tox",
   "__pycache__",
+  "pytorch_wheel_installer/__init__.py",
 ]
 line_length = 88
 use_parentheses = true
