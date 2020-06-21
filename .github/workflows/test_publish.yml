@@ -1,0 +1,38 @@
+name: test_publish
+
+on:
+  push:
+    branches:
+      - releases/*
+
+jobs:
+  test_pypi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.6"
+
+      - name: Upgrade pip
+        run: pip install --upgrade pip
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install requirements
+        run: pip install setuptools wheel twine
+
+      - name: Build tarball and wheel
+        run: python setup.py sdist bdist_wheel
+
+      - name: Check README
+        run: twine check dist/*
+
+      - name: Upload to TestPyPI
+        env:
+          TWINE_REPOSITORY: testpypi
+          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
+        run: twine upload dist/*
