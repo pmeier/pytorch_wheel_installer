@@ -66,13 +66,11 @@ def parse_input() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--pip-cmd",
-        "-pc",
+        "--install-cmd",
+        "-ic",
         type=str,
         default="pip install",
-        help=(
-            "pip command that is used to install the wheels. Defaults to 'pip install'"
-        ),
+        help="Command that is used to install the wheels. Defaults to 'pip install'",
     )
 
     args = parser.parse_args()
