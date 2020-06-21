@@ -13,3 +13,5 @@ except FileNotFoundError:
     )
     warnings.warn(msg)
     __version__ = __base_version__
+
+from .core import *
