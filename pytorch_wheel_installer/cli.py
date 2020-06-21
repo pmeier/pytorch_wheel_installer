@@ -3,6 +3,7 @@ import re
 import subprocess
 import sys
 from platform import system
+from typing import Any, Dict, Optional, Type
 
 from .__init__ import __name__ as name  # type: ignore[import]
 from .__init__ import __version__ as version
@@ -11,6 +12,7 @@ from .utils import Backend, Language, Platform
 
 __all__ = [
     "entry_point",
+    "description",
     "argument_meta",
     "get_backend",
     "get_language",
@@ -34,9 +36,7 @@ def entry_point() -> None:
 
 
 def parse_input() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Install PyTorch from the latest wheels."
-    )
+    parser = argparse.ArgumentParser(description=description())
     parser.add_argument(
         "--version",
         "-v",
@@ -80,7 +80,9 @@ def parse_input() -> argparse.Namespace:
     return args
 
 
-from typing import Dict, Type, Any, Optional
+def description() -> str:
+    return "Install PyTorch from the latest wheels."
+
 
 HELP = {
     "distribution": (
@@ -109,6 +111,8 @@ def argument_meta(
     default: Any = None,
     help: Optional[str] = None,
 ) -> Dict[str, Any]:
+    if name == "install":
+        raise ZeroDivisionError
     if metavar is None:
         metavar = name.upper()
     if help is None:
