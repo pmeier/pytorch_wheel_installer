@@ -184,20 +184,21 @@ class Argument:
 HELP = to_defaultdict(
     {
         "distribution": (
-            "PyTorch distribution e.g. 'torch', 'torchvision'. Multiple distributions can "
-            "be given as a comma-separated list. Defaults to 'torch,torchvision'."
+            "PyTorch distribution e.g. 'torch', 'torchvision'. Multiple distributions "
+            "can be given as a comma-separated list. Defaults to 'torch,torchvision'."
         ),
         "backend": (
             "Computation backend e.g. 'cpu' or 'cu102'. If not given the backend is "
-            "automatically detected from the available hardware preferring CUDA over CPU."
+            "automatically detected from the available hardware preferring CUDA over "
+            "CPU."
         ),
         "language": (
-            "Language implementation and version tag e.g. 'py3', 'cp36'. Defaults to the "
-            "language version used to run this."
+            "Language implementation and version tag e.g. 'py3', 'cp36'. Defaults to "
+            "the language version used to run this."
         ),
         "platform": (
-            "Platform e.g. 'linux', 'windows', 'macos', or 'any'. Defaults to the platform "
-            "that is used to run this."
+            "Platform e.g. 'linux', 'windows', 'macos', or 'any'. Defaults to the "
+            "platform that is used to run this."
         ),
     },
     default="",
