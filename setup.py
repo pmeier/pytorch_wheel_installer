@@ -65,8 +65,8 @@ package_data = {PACKAGE_NAME: [version_file, "py.typed"]}
 
 install_requires = ("typing_extensions",)
 
-classifiers = (
-    "Development Status :: 3 - Alpha",
+classifiers = [
+    "Development Status :: 4 - Beta",
     "Framework :: tox",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
@@ -75,7 +75,7 @@ classifiers = (
     "Programming Language :: Python :: 3.8",
     "Topic :: System :: Installation/Setup",
     "Topic :: Utilities",
-)
+]
 
 setup(
     name=about["__name__"],
