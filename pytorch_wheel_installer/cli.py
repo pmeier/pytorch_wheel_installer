@@ -33,7 +33,7 @@ def entry_point() -> None:
         print("\n".join(links))
         sys.exit()
 
-    subprocess.check_call(" ".join((args.pip_cmd, *links)), shell=True)
+    subprocess.check_call(" ".join((args.install_cmd, *links)), shell=True)
 
 
 def parse_input() -> argparse.Namespace:
