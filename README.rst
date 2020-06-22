@@ -54,35 +54,34 @@ The CLI can be invoked by ``pytorch_wheel_installer`` or its shorthand ``pwi``.
 .. code-block:: sh
 
   $ pwi --help
-  usage: pwi [-h] [--version] [--distribution DISTRIBUTION] [--backend BACKEND]
-             [--language LANGUAGE] [--platform PLATFORM] [--no-install]
-             [--pip-cmd PIP_CMD]
+  usage: pwi [-h] [-v] [-d DISTRIBUTION] [-b BACKEND] [-p PLATFORM]
+             [-l LANGUAGE] [-ni] [-ic INSTALL_CMD]
 
   Install PyTorch from the latest wheels.
 
   optional arguments:
     -h, --help            show this help message and exit
-    --version, -v         Show version and exit.
-    --distribution DISTRIBUTION, -d DISTRIBUTION
+    -v, --version         Show version and exit.
+    -d DISTRIBUTION, --distribution DISTRIBUTION
                           PyTorch distribution e.g. 'torch', 'torchvision'.
                           Multiple distributions can be given as a comma-
                           separated list. Defaults to 'torch,torchvision'.
-    --backend BACKEND, -b BACKEND
+    -b BACKEND, --backend BACKEND
                           Computation backend e.g. 'cpu' or 'cu102'. If not
                           given the backend is automatically detected from the
                           available hardware preferring CUDA over CPU.
-    --language LANGUAGE, -l LANGUAGE
+    -p PLATFORM, --platform PLATFORM
+                          Platform e.g. 'linux', 'windows', 'macos', or 'any'.
+                          Defaults to the platform that is used to run this.
+    -l LANGUAGE, --language LANGUAGE
                           Language implementation and version tag e.g. 'py3',
                           'cp36'. Defaults to the language version used to run
                           this.
-    --platform PLATFORM, -p PLATFORM
-                          Platform e.g. 'linux', 'windows', 'macos', or 'any'.
-                          Defaults to the platform that is used to run this.
-    --no-install, -ni     If given, the selected wheels are written to STDOUT
+    -ni, --no-install     If given, the selected wheels are written to STDOUT
                           instead of installed.
-    --pip-cmd PIP_CMD, -pc PIP_CMD
-                          pip command that is used to install the wheels.
-                          Defaults to 'pip install'
+    -ic INSTALL_CMD, --install-cmd INSTALL_CMD
+                          Command that is used to install the wheels. Defaults
+                          to 'pip install'
 
 The ``--no-install`` option can be used to pipe or redirect the wheel links such as
 generating a ``requirements.txt`` file:
@@ -103,27 +102,50 @@ tox
   ...
   optional arguments:
   ...
-  --pytorch-install                Install PyTorch distributions from the latest
-                                   wheels before the other dependencies. (default:
-                                   False)
-  --pytorch-distribution DISTRIBUTION
-                                   PyTorch distribution e.g. 'torch', 'torchvision'.
-                                   Multiple distributions can be given as a
-                                   comma-separated list. Defaults to
-                                   'torch,torchvision'. (default:torch,torchvision)
-  --pytorch-backend BACKEND        Computation backend e.g. 'cpu' or 'cu102'. If not
-                                   given the backend is automatically detected from the
-                                   available hardware preferring CUDA over CPU.
-                                   (default: None)
-  --pytorch-language LANGUAGE      Language implementation and version tag e.g. 'py3',
-                                   'cp36'. Defaults to the language version used to run
-                                   this. (default: None)
-  --pytorch-platform PLATFORM      Platform e.g. 'linux', 'windows', 'macos', or 'any'.
-                                   Defaults to the platform that is used to run this.
-                                   (default: None)
+    --pytorch-install                Install PyTorch from the latest wheels. (default:
+                                     False)
+    --pytorch-distribution DISTRIBUTION
+                                     PyTorch distribution e.g. 'torch', 'torchvision'.
+                                     Multiple distributions can be given as a
+                                     comma-separated list. Defaults to
+                                     'torch,torchvision'. (default: torch,torchvision)
+    --pytorch-backend BACKEND        Computation backend e.g. 'cpu' or 'cu102'. If not
+                                     given the backend is automatically detected from
+                                     the available hardware preferring CUDA over CPU.
+                                     (default: None)
+    --pytorch-language LANGUAGE      Language implementation and version tag e.g.
+                                     'py3', 'cp36'. Defaults to the language version
+                                     used to run this. (default: None)
+    --pytorch-platform PLATFORM      Platform e.g. 'linux', 'windows', 'macos', or
+                                     'any'. Defaults to the platform that is used to
+                                     run this. (default: None)
   ...
 
-If ``--pytorch-install`` is not given, nothing is installed.
+.. code-block:: sh
+
+  $ tox --help-ini
+  pytorch_install <bool>   default: False
+  Install PyTorch from the latest wheels.
+
+  pytorch_distribution <string> default: torch,torchvision
+  PyTorch distribution e.g. 'torch', 'torchvision'. Multiple distributions can be given
+  as a comma-separated list. Defaults to 'torch,torchvision'.
+
+  pytorch_backend <string> default: None
+  Computation backend e.g. 'cpu' or 'cu102'. If not given the backend is automatically
+  detected from the available hardware preferring CUDA over CPU.
+
+  pytorch_language <string> default: None
+  Language implementation and version tag e.g. 'py3', 'cp36'. Defaults to the language
+  version used to run this.
+
+  pytorch_platform <string> default: None
+  Platform e.g. 'linux', 'windows', 'macos', or 'any'. Defaults to the platform that is
+  used to run this.
+
+
+If neither ``--pytorch-install`` nor ``pytorch_install = true`` is given, nothing is
+installed.
 
 Python
 ------
