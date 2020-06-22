@@ -1,7 +1,12 @@
 import re
-from typing import Any, Optional, Tuple, cast
+from collections import defaultdict
+from typing import Any, Dict, Optional, Tuple, cast
 
-__all__ = ["Backend", "Language", "Platform"]
+__all__ = ["to_defaultdict", "Backend", "Language", "Platform"]
+
+
+def to_defaultdict(dct: Dict, default: Any = None) -> defaultdict:
+    return defaultdict(lambda: default, dct)
 
 
 class Backend:
