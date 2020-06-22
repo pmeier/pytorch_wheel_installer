@@ -1,13 +1,14 @@
+from typing import Any, Callable
+
 from tox import hookimpl
 from tox.action import Action
 from tox.config import Parser
 from tox.venv import VirtualEnv
 
 from .cli import (
-    add_backend_argument,
-    add_distribution_argument,
-    add_language_argument,
-    add_platform_argument,
+    Argument,
+    description,
+    get_argument,
     get_backend,
     get_language,
     get_platform,
@@ -17,33 +18,36 @@ from .core import find_links
 
 @hookimpl
 def tox_addoption(parser: Parser) -> None:
-    parser.add_argument(
-        "--pytorch-install",
-        action="store_true",
-        help="Install PyTorch distributions from the latest wheels.",
+    argument = Argument(
+        "install", description(), type=bool, default=False, action="store_true"
+    )
+    argument.add_as_tox_argument(parser)
+    argument.add_as_tox_testenv_attribute(
+        parser,
+        postprocess=Argument.postprocessor(
+            argument.name, select=lambda arg, value: arg or value
+        ),
     )
 
-    add_distribution_argument(parser, "--pytorch-distribution")
-    add_backend_argument(parser, "--pytorch-backend")
-    add_language_argument(parser, "--pytorch-language")
-    add_platform_argument(parser, "--pytorch-platform")
+    for name in ("distribution", "backend", "language", "platform"):
+        argument = get_argument(name)
+        argument.add_as_tox_argument(parser)
+        argument.add_as_tox_testenv_attribute(parser)
 
 
 @hookimpl
 def tox_testenv_install_deps(venv: VirtualEnv, action: Action) -> None:
-    args = venv.envconfig.config.option
-    if not args.pytorch_install:
+    config = venv.envconfig
+    if not config.pytorch_install:
         return None
 
-    backend = (
-        args.pytorch_backend if args.pytorch_backend is not None else get_backend()
-    )
-    language = (
-        args.pytorch_language if args.pytorch_language is not None else get_language()
-    )
-    platform = (
-        args.pytorch_platform if args.pytorch_platform is not None else get_platform()
-    )
+    def get_default(value: Any, default_fn: Callable) -> Any:
+        return value if value is not None else default_fn()
 
-    links = find_links(args.pytorch_distribution, backend, language, platform)
+    distribution = config.pytorch_distribution
+    backend = get_default(config.pytorch_backend, get_backend)
+    language = get_default(config.pytorch_language, get_language)
+    platform = get_default(config.pytorch_platform, get_platform)
+
+    links = find_links(distribution, backend, language, platform)
     action.popen((venv.getcommandpath("pip"), "install", *links))

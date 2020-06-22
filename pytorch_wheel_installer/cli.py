@@ -3,20 +3,18 @@ import re
 import subprocess
 import sys
 from platform import system
-from typing import Any
-from typing_extensions import Protocol
+from typing import Any, Callable, Dict, Optional
 
 from .__init__ import __name__ as name  # type: ignore[import]
 from .__init__ import __version__ as version
 from .core import find_links
-from .utils import Backend, Language, Platform
+from .utils import Backend, Language, Platform, to_defaultdict
 
 __all__ = [
     "entry_point",
-    "add_distribution_argument",
-    "add_backend_argument",
-    "add_language_argument",
-    "add_platform_argument",
+    "description",
+    "Argument",
+    "get_argument",
     "get_backend",
     "get_language",
     "get_platform",
@@ -39,25 +37,24 @@ def entry_point() -> None:
 
 
 def parse_input() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Install PyTorch from the latest wheels."
-    )
+    # TODO: Use default parser
+    parser = argparse.ArgumentParser(description=description())
     parser.add_argument(
-        "--version",
         "-v",
+        "--version",
         action="store_true",
         default=False,
         help="Show version and exit.",
     )
 
-    add_distribution_argument(parser, "--distribution", "-d")
-    add_backend_argument(parser, "--backend", "-b")
-    add_language_argument(parser, "--language", "-l")
-    add_platform_argument(parser, "--platform", "-p")
+    get_argument("distribution").add_as_cli_argument(parser)
+    get_argument("backend").add_as_cli_argument(parser)
+    get_argument("platform").add_as_cli_argument(parser)
+    get_argument("language").add_as_cli_argument(parser)
 
     parser.add_argument(
-        "--no-install",
         "-ni",
+        "--no-install",
         action="store_true",
         default=False,
         help=(
@@ -66,8 +63,8 @@ def parse_input() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--install-cmd",
         "-ic",
+        "--install-cmd",
         type=str,
         default="pip install",
         help="Command that is used to install the wheels. Defaults to 'pip install'",
@@ -85,62 +82,138 @@ def parse_input() -> argparse.Namespace:
     return args
 
 
-class Parser(Protocol):
-    def add_argument(self, *args: Any, **kwargs: Any) -> argparse.Action:
-        ...
+def description() -> str:
+    return "Install PyTorch from the latest wheels."
 
 
-def add_distribution_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="DISTRIBUTION",
-        type=str,
-        default="torch,torchvision",
-        help=(
-            "PyTorch distribution e.g. 'torch', 'torchvision'. Multiple distributions "
-            "can be given as a comma-separated list. Defaults to 'torch,torchvision'."
+try:
+    from tox.config import Parser as ToxParser
+except ImportError:
+    from typing_extensions import Protocol
+
+    class ToxParser(Protocol):  # type: ignore[no-redef]
+        def add_argument(self, *args: Any, **kwargs: Any) -> None:
+            ...
+
+        def add_testenv_attribute(
+            self,
+            name: str,
+            type: str,
+            help: str,
+            default: Any = None,
+            postprocess: Optional[Callable[[Any, Any], Any]] = None,
+        ) -> None:
+            ...
+
+
+class Argument:
+    TYPE_TO_TYPESTR: Dict[Callable[[str], Any], str] = {bool: "bool", str: "string"}
+
+    def __init__(
+        self,
+        name: str,
+        help: str,
+        metavar: Optional[str] = None,
+        type: Callable[[str], Any] = str,
+        default: Any = None,
+        action: str = "store",
+    ) -> None:
+        self.name = name.lower()
+        self.help = help
+        if metavar is None:
+            metavar = name.upper()
+        self.metavar = metavar
+        self.type = type
+        self.default = default
+        self.action = action
+
+    def add_as_cli_argument(self, parser: argparse.ArgumentParser) -> None:
+        short_option = f"-{self.name[0]}"
+        long_option = f"--{self.name.replace('_', '-')}"
+        if self.action == "store":
+            kwargs: Dict[str, Any] = {"metavar": self.metavar, "type": self.type}
+        else:
+            kwargs = {}
+        parser.add_argument(
+            short_option,
+            long_option,
+            default=self.default,
+            action=self.action,
+            help=self.help,
+            **kwargs,
+        )
+
+    def add_as_tox_argument(self, parser: ToxParser) -> None:
+        option = f"--pytorch-{self.name.replace('_', '-')}"
+        if self.action == "store":
+            kwargs: Dict[str, Any] = {"metavar": self.metavar, "type": self.type}
+        else:
+            kwargs = {}
+        parser.add_argument(
+            option, default=self.default, action=self.action, help=self.help, **kwargs
+        )
+
+    def add_as_tox_testenv_attribute(
+        self, parser: ToxParser, postprocess: Optional[Callable[[Any, Any], Any]] = None
+    ) -> None:
+        if postprocess is None:
+            postprocess = self.postprocessor(self.name)
+
+        name = f"pytorch_{self.name}"
+        typestr = self.TYPE_TO_TYPESTR[self.type]
+        parser.add_testenv_attribute(
+            name, typestr, self.help, default=self.default, postprocess=postprocess
+        )
+
+    @staticmethod
+    def postprocessor(
+        name: str, select: Optional[Callable[[Any, Any], Any]] = None
+    ) -> Callable[[Any, Any], Any]:
+        if select is None:
+
+            def select(arg: Any, value: Any) -> Any:
+                return arg if arg is not None else value
+
+        def postprocess(testenv_config: Any, value: Any) -> Any:
+            arg = getattr(testenv_config.config.option, f"pytorch_{name}")
+            return select(arg, value)  # type: ignore[misc]
+
+        return postprocess
+
+
+HELP = to_defaultdict(
+    {
+        "distribution": (
+            "PyTorch distribution e.g. 'torch', 'torchvision'. Multiple distributions can "
+            "be given as a comma-separated list. Defaults to 'torch,torchvision'."
         ),
-    )
-
-
-def add_backend_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="BACKEND",
-        type=str,
-        default=None,
-        help=(
+        "backend": (
             "Computation backend e.g. 'cpu' or 'cu102'. If not given the backend is "
-            "automatically detected from the available hardware preferring CUDA over "
-            "CPU."
+            "automatically detected from the available hardware preferring CUDA over CPU."
         ),
-    )
-
-
-def add_language_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="LANGUAGE",
-        type=str,
-        default=None,
-        help=(
-            "Language implementation and version tag e.g. 'py3', 'cp36'. Defaults to "
-            "the language version used to run this."
+        "language": (
+            "Language implementation and version tag e.g. 'py3', 'cp36'. Defaults to the "
+            "language version used to run this."
         ),
-    )
-
-
-def add_platform_argument(parser: Parser, *option_strings: str) -> None:
-    parser.add_argument(
-        *option_strings,
-        metavar="PLATFORM",
-        type=str,
-        default=None,
-        help=(
-            "Platform e.g. 'linux', 'windows', 'macos', or 'any'. Defaults to the "
-            "platform that is used to run this."
+        "platform": (
+            "Platform e.g. 'linux', 'windows', 'macos', or 'any'. Defaults to the platform "
+            "that is used to run this."
         ),
-    )
+    },
+    default="",
+)
+
+DEFAULT = to_defaultdict({"distribution": "torch,torchvision"})
+
+
+def get_argument(
+    name: str, help: Optional[str] = None, default: Any = None, **kwargs: Any,
+) -> Argument:
+    if help is None:
+        help = HELP[name]
+    if default is None:
+        default = DEFAULT[name]
+    return Argument(name, help, default=default, **kwargs)
 
 
 def get_backend() -> Backend:
