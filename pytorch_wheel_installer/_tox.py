@@ -50,4 +50,5 @@ def tox_testenv_install_deps(venv: VirtualEnv, action: Action) -> None:
     platform = get_default(config.pytorch_platform, get_platform)
 
     links = find_links(distribution, backend, language, platform)
-    action.popen((venv.getcommandpath("pip"), "install", *links))
+
+    venv._install(links, action=action)
