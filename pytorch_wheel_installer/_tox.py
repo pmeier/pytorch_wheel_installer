@@ -51,4 +51,5 @@ def tox_testenv_install_deps(venv: VirtualEnv, action: Action) -> None:
 
     links = find_links(distribution, backend, language, platform)
 
+    action.setactivity("installdeps-pytorch", ", ".join(links))
     venv._install(links, action=action)
