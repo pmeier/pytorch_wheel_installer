@@ -1,55 +1,50 @@
-from typing import Any, Callable
+from typing import Optional
 
 from tox import hookimpl
 from tox.action import Action
-from tox.config import Parser
+from tox.config import Parser, TestenvConfig
 from tox.venv import VirtualEnv
 
-from .cli import (
-    Argument,
-    description,
-    get_argument,
-    get_backend,
-    get_language,
-    get_platform,
-)
-from .core import find_links
+from .cli import get_help
+from .computation_backend import ComputationBackend
+from .find import find_links
 
 
 @hookimpl
 def tox_addoption(parser: Parser) -> None:
-    argument = Argument(
-        "install", description(), type=bool, default=False, action="store_true"
-    )
-    argument.add_as_tox_argument(parser)
-    argument.add_as_tox_testenv_attribute(
-        parser,
-        postprocess=Argument.postprocessor(
-            argument.name, select=lambda arg, value: arg or value
-        ),
+    parser.add_testenv_attribute(
+        "pytorch_distributions",
+        "line-list",
+        help="each line specifies a PyTorch distribution in pip/setuptools format",
+        default=(),
     )
 
-    for name in ("distribution", "backend", "language", "platform"):
-        argument = get_argument(name)
-        argument.add_as_tox_argument(parser)
-        argument.add_as_tox_testenv_attribute(parser)
+    def postprocess_computation_backend(
+        testenv_config: TestenvConfig, value: Optional[str]
+    ) -> Optional[ComputationBackend]:
+        if value is None:
+            return None
+
+        return ComputationBackend.from_str(value)
+
+    parser.add_testenv_attribute(
+        "pytorch_computation_backend",
+        "string",
+        get_help("computation_backend"),
+        postprocess=postprocess_computation_backend,
+    )
 
 
 @hookimpl
 def tox_testenv_install_deps(venv: VirtualEnv, action: Action) -> None:
     config = venv.envconfig
-    if not config.pytorch_install:
+    distributions = config.pytorch_distributions
+    if not distributions:
         return None
 
-    def get_default(value: Any, default_fn: Callable) -> Any:
-        return value if value is not None else default_fn()
-
-    distribution = config.pytorch_distribution
-    backend = get_default(config.pytorch_backend, get_backend)
-    language = get_default(config.pytorch_language, get_language)
-    platform = get_default(config.pytorch_platform, get_platform)
-
-    links = find_links(distribution, backend, language, platform)
+    links = find_links(
+        distributions, computation_backend=config.pytorch_computation_backend
+    )
 
     action.setactivity("installdeps-pytorch", ", ".join(links))
     venv._install(links, action=action)
