@@ -133,3 +133,8 @@ def test_entry_point_install_cmd(subtests, mocker, patch_argv):
 
             cmd = check_call_mock.call_args[0][0]
             assert cmd == " ".join((install_cmd, *links))
+
+
+def test_get_help_no_help():
+    with pytest.raises(RuntimeError):
+        cli.get_help("no_help_available")
