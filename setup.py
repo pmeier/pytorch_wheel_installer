@@ -63,8 +63,6 @@ with open(path.join(PACKAGE_ROOT, version_file), "w") as fh:
     fh.write(__version__)
 package_data = {PACKAGE_NAME: [version_file, "py.typed"]}
 
-install_requires = ("typing_extensions",)
-
 classifiers = [
     "Development Status :: 4 - Beta",
     "Framework :: tox",
@@ -76,6 +74,8 @@ classifiers = [
     "Topic :: System :: Installation/Setup",
     "Topic :: Utilities",
 ]
+
+install_requires = ("pip>=20.1",)
 
 setup(
     name=about["__name__"],

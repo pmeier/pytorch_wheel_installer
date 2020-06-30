@@ -18,8 +18,8 @@ multi_line_output = 3
 force_grid_wrap = 0
 include_trailing_comma = true
 
-known_standard_library = ["setuptools", "typing_extensions"]
-known_third_party = ["pytest", "requests", "tox"]
+known_standard_library = ["setuptools"]
+known_third_party = ["pip", "pytest", "requests", "tox"]
 known_first_party = ["pytorch_wheel_installer"]
 
 [tool.black]
