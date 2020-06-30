@@ -3,7 +3,7 @@ from io import StringIO
 
 import pytest
 
-from pytorch_wheel_installer import __version__, cli
+from pytorch_wheel_installer import __version__, cli, computation_backend
 
 
 @pytest.fixture
@@ -35,6 +35,18 @@ def test_parse_input_smoke(subtests, patch_argv):
     with subtests.test("install_cmd"):
         assert "install_cmd" in args
         assert isinstance(args.install_cmd, str)
+
+
+def test_parse_input_computation_backend(subtests, patch_argv):
+    for arg in ("-b", "--computation-backend"):
+        with subtests.test(arg=arg):
+            patch_argv(arg, "cu42", "foo")
+
+            args = cli.parse_input()
+
+            assert isinstance(
+                args.computation_backend, computation_backend.ComputationBackend
+            )
 
 
 def test_entry_point_help_smoke(subtests, mocker, patch_argv):
