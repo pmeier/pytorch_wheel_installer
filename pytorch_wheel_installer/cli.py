@@ -19,6 +19,9 @@ def entry_point() -> None:
         print(f"{name}=={version}")
         sys.exit()
 
+    if not args.distributions:
+        sys.exit()
+
     links = find_links(args.distributions, computation_backend=args.computation_backend)
 
     if args.no_install:
