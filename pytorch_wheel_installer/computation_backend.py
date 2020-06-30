@@ -10,8 +10,6 @@ __all__ = [
     "detect_computation_backend",
 ]
 
-NVCC_RELEASE_PATTERN = re.compile(r"release (?P<major>\d+)[.](?P<minor>\d+)")
-
 
 class ComputationBackend(ABC):
     @property
@@ -75,6 +73,9 @@ class CUDABackend(ComputationBackend):
         return f"cu{self.major}{self.minor}"
 
 
+NVCC_RELEASE_PATTERN = re.compile(r"release (?P<major>\d+)[.](?P<minor>\d+)")
+
+
 def detect_computation_backend() -> ComputationBackend:
     fallback = CPUBackend()
     try:
@@ -83,11 +84,11 @@ def detect_computation_backend() -> ComputationBackend:
             .decode("utf-8")
             .strip()
         )
-        match = NVCC_RELEASE_PATTERN.findall(output)[0]
+        match = NVCC_RELEASE_PATTERN.findall(output)
         if not match:
             return fallback
 
-        major, minor = match
+        major, minor = match[0]
         return CUDABackend(major, minor)
     except subprocess.CalledProcessError:
         return fallback
