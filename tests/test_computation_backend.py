@@ -18,13 +18,14 @@ def generic_backend():
 def test_ComputationBackend_eq(generic_backend):
     assert generic_backend == generic_backend
     assert generic_backend == generic_backend.local
+    assert generic_backend != 0
 
 
 def test_ComputationBackend_hash_smoke(generic_backend):
     assert isinstance(hash(generic_backend), int)
 
 
-def test_ComputationBackend_repr_smoke():
+def test_ComputationBackend_repr_smoke(generic_backend):
     assert isinstance(repr(generic_backend), str)
 
 
@@ -100,6 +101,20 @@ def test_detect_computation_backend_unknown_release(mocker):
     assert isinstance(cb.detect_computation_backend(), cb.CPUBackend)
 
 
+def test_detect_computation_backend_cuda(mocker):
+    major = 42
+    minor = 21
+    mocker.patch(
+        "pytorch_wheel_installer.computation_backend.subprocess.check_output",
+        return_value=f"foo\nbar, release {major}.{minor}, baz".encode("utf-8"),
+    )
+
+    backend = cb.detect_computation_backend()
+    assert isinstance(backend, cb.CUDABackend)
+    assert backend.major == major
+    assert backend.minor == minor
+
+
 @skip_if_cuda_unavailable
 def test_detect_computation_backend_cuda_smoke():
-    assert isinstance(cb.detect_computation_backend(), cb.CUDABackend,)
+    assert isinstance(cb.detect_computation_backend(), cb.CUDABackend)

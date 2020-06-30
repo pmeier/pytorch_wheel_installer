@@ -89,6 +89,6 @@ def detect_computation_backend() -> ComputationBackend:
             return fallback
 
         major, minor = match[0]
-        return CUDABackend(major, minor)
+        return CUDABackend(int(major), int(minor))
     except subprocess.CalledProcessError:
         return fallback
