@@ -1,4 +1,5 @@
 import subprocess
+import warnings
 from os import path
 from setuptools import find_packages, setup
 
@@ -64,7 +65,7 @@ with open(path.join(PACKAGE_ROOT, version_file), "w") as fh:
 package_data = {PACKAGE_NAME: [version_file, "py.typed"]}
 
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 7 - Inactive",
     "Framework :: tox",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
@@ -76,6 +77,11 @@ classifiers = [
 ]
 
 install_requires = ("pip>=20.1",)
+
+warnings.warn(
+    "This project is deprecated and will see no further development. It is superseded "
+    "by light-the-torch (https://pypi.org/project/light-the-torch/)."
+)
 
 setup(
     name=about["__name__"],

@@ -1,3 +1,11 @@
+Note
+====
+
+This project is deprecated and will see no further development. It is superseded
+by `light-the-torch <https://pypi.org/project/light-the-torch/>`_ .
+
+Original README below.
+
 Disclaimer
 ==========
 
